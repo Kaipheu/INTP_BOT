@@ -1,74 +1,62 @@
-const https = require('https');
-const { Client, Intents } = require('discord.js');
+const { Client, Intents, MessageEmbed } = require('discord.js');
 const { token, guild_id, channel_id } = require('./config.json');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS,Intents.FLAGS.GUILD_MESSAGES,Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
 const REenTete = new RegExp('Proposition (\\d+) :');
+const exp = require('./xperiance.js');
 let leaderBoard = "";
 
-const options = {
-  hostname: 'mee6.xyz',
-  port: 443,
-  path: '/api/plugins/levels/leaderboard/' + guild_id,
-  method: 'GET'
-};
-
-BigList = []
-
-// const req = https.request(options, (res) => {
-//   res.on('data', (d) => {
-//     leaderBoard += d;
-//   });
-//   res.on('end', (d) => {
-//     leaderBoard = JSON.parse(leaderBoard);
-//     //process.stdout.write(JSON.stringify(leaderBoard));
-//   });
-// });
-
-//req.end();
-
-// function attente_react(msg) {
-//   const filter = (reaction, user) => reaction.emoji.name === '👍' || reaction.emoji.name === '👎';
-//   msg.awaitReactions({time: 1000})
-//     .then(collected =>{ 
-//       console.log(`Collected ${JSON.stringify(collected)} reactions`);
-//       attente_react(msg)})
-//     .catch(console.error);
-// }
+let BigObj = {}
 
 client.once('ready', () => {
 	console.log('Ready!');
 });
 
+
+function generateTable(pour, contre){
+  dd = exp()
+  return new MessageEmbed()
+	.setColor('#0099ff')
+	.setTitle('Table de vote :')
+	.addFields(
+		{ name: 'Pour',   value: pour.toString(), inline: true   },
+    { name: 'Contre', value: contre.toString(), inline: true }
+	)
+}
+
 client.on('messageCreate', async msg => {
 	if(msg.guildId == guild_id && msg.channelId == channel_id){
     res = msg.content.match(REenTete)
     if(res){
-      thread = msg.startThread({"name": res[0]});
-      BigList.push(msg);
+      thread = await msg.startThread({"name": res[0]});
+      cmp =  await thread.send({ embeds: [generateTable(0,0)] });
+      BigObj[msg.id] = cmp;
       Promise.all([
         msg.react('👍'),
         msg.react('👎')
       ]);
-      thread.then(res => res.send("Pour : 0\nContre : 0"));
     }
-
 	}
 });
 
+
+/*
+client.on('messageReactionAdd', (MessageReaction, user) => {
+  if(user.bot) return ;
+  if(BigObj[MessageReaction.message.id]){
+    xx = await exp();
+    console.log(xx);
+    BigObj[MessageReaction.message.id].edit({ embeds: [generateTable(1,0)]});
+   }
+});
+*/
+client.on('messageReactionRemove', (MessageReaction, user) => {
+  if(user.bot) return ;
+   if(BigObj[MessageReaction.message.id]){
+    BigObj[MessageReaction.message.id].edit({ embeds: [generateTable(0,1)]});
+   }
+});
 client.on('error', err => {
    console.warn(err);
 });
 
 client.login(token);
-
-function actualisation() {
-  console.log("actu");
-  BigList.forEach(msg => {
-    console.log(msg.content)
-    msg.fetch()
-    const reacs = msg.reactions.cache.filter(reaction => reaction.emoji.name === '👍' || reaction.emoji.name === '👎');
-    console.log(reacs)
-  });
-}
-
-setInterval(actualisation, 1500);

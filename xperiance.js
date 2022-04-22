@@ -11,7 +11,7 @@ const options = {
 };
 
 
-async function xp() {
+exp = async function() {
 	let donnees = "";
 	let response = null;
 	const resEmitter = new responseEmitter();
@@ -27,4 +27,4 @@ async function xp() {
 	return JSON.parse(donnees);
 }
 
-xp();
+module.exports = exp;
