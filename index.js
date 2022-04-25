@@ -24,7 +24,7 @@ function generateTable(pour, contre){
 }
 
 client.on('messageCreate', async msg => {
-	if(msg.guildId == guild_id && msg.channelId == channel_id){
+	if(msg.channelId == channel_id){
     res = msg.content.match(REenTete)
     if(res){
       thread = await msg.startThread({"name": res[0]});
