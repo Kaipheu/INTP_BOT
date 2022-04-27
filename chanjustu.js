@@ -13,11 +13,11 @@ const rest = new REST({ version: '10' }).setToken(token);
 
 function init() {
   let journeEcoule = (Date.now()+ decalage()  ) % 86400000
-  if(journeEcoule < convHeureMillis(CONFIG['horaire']['fermeture']) && 
-     journeEcoule > convHeureMillis(CONFIG['horaire']['ouverture']) ){
-      permChans(CONFIG["channels"],CONFIG["role"],'0' );
-  }else{     
-      permChans(CONFIG["channels"],CONFIG["role"],'21990232555510' );
+  if(journeEcoule < convHeureMillis(CONFIG['fermeture']['horaire']) && 
+     journeEcoule > convHeureMillis(CONFIG['ouverture']['horaire']) ){
+    defPermChansV(CONFIG["channels"],CONFIG["role"],CONFIG["ouverture"]["droits"]);  
+  }else{
+    defPermChansV(CONFIG["channels"],CONFIG["role"],CONFIG["fermeture"]["droits"]);
   }
   resoleur();
 }
@@ -25,28 +25,28 @@ function init() {
 function resoleur() {
   let journeEcoule = (Date.now()+ decalage()  ) % 86400000
   console.log("Maintenant",journeEcoule);
-  console.log("ouve",convHeureMillis(CONFIG['horaire']['ouverture']));
-  console.log("ferm",convHeureMillis(CONFIG['horaire']['fermeture']));
+  console.log("ouve",convHeureMillis(CONFIG['ouverture']['horaire']));
+  console.log("ferm",convHeureMillis(CONFIG['fermeture']['horaire']));
 
-  if(journeEcoule < convHeureMillis(CONFIG['horaire']['fermeture']) && 
-     journeEcoule < convHeureMillis(CONFIG['horaire']['ouverture']) ){
-    setTimeout(devoiler,convHeureMillis(CONFIG['horaire']['ouverture'])-journeEcoule);
-    setTimeout(cacher  ,convHeureMillis(CONFIG['horaire']['fermeture'])-journeEcoule);
-    console.log("Avenir ",new Date(decalage()+ Date.now()+convHeureMillis(CONFIG['horaire']['ouverture'])-journeEcoule ));
-    console.log("Avenir ",new Date(decalage()+ Date.now()+convHeureMillis(CONFIG['horaire']['fermeture'])-journeEcoule));
-  }else if(journeEcoule < convHeureMillis(CONFIG['horaire']['fermeture']) && 
-           journeEcoule > convHeureMillis(CONFIG['horaire']['ouverture']) ){
-    setTimeout(devoiler,86400000 + convHeureMillis(CONFIG['horaire']['ouverture'])-journeEcoule);
-    setTimeout(cacher  ,           convHeureMillis(CONFIG['horaire']['fermeture'])-journeEcoule);
-    console.log("Avenir ",new Date(decalage()+ Date.now() +86400000 + convHeureMillis(CONFIG['horaire']['ouverture'])-journeEcoule ));
-    console.log("Passé ",new Date(decalage()+ Date.now() +convHeureMillis(CONFIG['horaire']['fermeture'])-journeEcoule));
-  }else if(journeEcoule > convHeureMillis(CONFIG['horaire']['fermeture']) && 
-           journeEcoule > convHeureMillis(CONFIG['horaire']['ouverture'])) {
-    setTimeout(devoiler,86400000 + convHeureMillis(CONFIG['horaire']['ouverture'])-journeEcoule);
-    setTimeout(cacher  ,86400000 + convHeureMillis(CONFIG['horaire']['fermeture'])-journeEcoule);
+  if(journeEcoule < convHeureMillis(CONFIG['fermeture']['horaire']) && 
+     journeEcoule < convHeureMillis(CONFIG['ouverture']['horaire']) ){
+    setTimeout(devoiler,convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule);
+    setTimeout(cacher  ,convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule);
+    console.log("Avenir ",new Date(decalage()+ Date.now()+convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule ));
+    console.log("Avenir ",new Date(decalage()+ Date.now()+convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule));
+  }else if(journeEcoule < convHeureMillis(CONFIG['fermeture']['horaire']) && 
+           journeEcoule > convHeureMillis(CONFIG['ouverture']['horaire']) ){
+    setTimeout(devoiler,86400000 + convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule);
+    setTimeout(cacher  ,           convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule);
+    console.log("Avenir ",new Date(decalage()+ Date.now() +86400000 + convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule ));
+    console.log("Passé ",new Date(decalage()+ Date.now() +convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule));
+  }else if(journeEcoule > convHeureMillis(CONFIG['fermeture']['horaire']) && 
+           journeEcoule > convHeureMillis(CONFIG['ouverture']['horaire'])) {
+    setTimeout(devoiler,86400000 + convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule);
+    setTimeout(cacher  ,86400000 + convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule);
     
-    console.log("Passé ",new Date(decalage()+ Date.now() +86400000 + convHeureMillis(CONFIG['horaire']['ouverture'])-journeEcoule ));
-    console.log("Passé ",new Date(decalage()+ Date.now() +86400000 + convHeureMillis(CONFIG['horaire']['fermeture'])-journeEcoule));
+    console.log("Passé ",new Date(decalage()+ Date.now() +86400000 + convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule ));
+    console.log("Passé ",new Date(decalage()+ Date.now() +86400000 + convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule));
   }
 
 }
@@ -60,25 +60,48 @@ function convHeureMillis(heures) {
 }
 
 function cacher() {
-  permChans(CONFIG["channels"],CONFIG["role"],'21990232555510' );
+  defPermChans(CONFIG["channels"],CONFIG["role"],'21990232555510' );
   setInterval(
-    permChans,
+    defPermChans,
     86400000,
     CONFIG["channels"],CONFIG["role"],'21990232555510' );
 }
 
 function devoiler() {
-  permChans(CONFIG["channels"],CONFIG["role"],'0' ); 
+  defPermChans(CONFIG["channels"],CONFIG["role"],'0' ); 
   setInterval(
-    permChans,
+    defPermChans,
     86400000,
     CONFIG["channels"],CONFIG["role"],'0' );
 }
 
-function permChans(chans,role,perm) {
-  console.log(new Date(),"[permChans] -> ",chans,role,perm);
+function defPermChansV(chans,role,perm) {
+  return acqPermChans(chans)
+    .then(chansPerms =>{
+      chans.forEach(chan => {
+        chansPerms[chan].forEach(ChanPerm => {
+          if(ChanPerm["id"] === role){
+            if(perm != ChanPerm["deny"]){
+              console.log(chan);
+              return defPermChan(chan,role,perm);
+            }
+          }
+        });
+      })
+    });
+}
+
+function defPermChans(chans,role,perm) {
+   let listePromesses = [];
   chans.forEach(chan => {
-    rest.patch(
+    listePromesses.push(defPermChan(chan,role,perm));
+  });
+  return Promise.all(listePromesses);  
+}
+
+function defPermChan(chan,role,perm) {
+  console.log(new Date(),"[permChans] -> ",chan,role,perm);
+    return rest.patch(
       Routes.channel(chan),
       {
         body:{
@@ -93,8 +116,22 @@ function permChans(chans,role,perm) {
         }
       }
     );
-  });  
 }
 
+function acqPermChans(chans) {
+  let reps = []
+  chans.forEach(chan => {
+    reps.push(rest.get(Routes.channel(chan)));
+      //.then(rep => {return rep["permission_overwrites"]}));
+  });
+  return Promise.all(reps).then(valeurs =>{
+    let res = {}
+    valeurs.forEach(val => {
+      res[val["id"]] = val["permission_overwrites"]
+    })
+    return res;
+  });
+}
 // console.log(decalage());
 init();
+// acqPermChans(CONFIG["channels"]).then(console.log)
