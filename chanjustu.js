@@ -23,11 +23,8 @@ function init() {
 }
 
 function resoleur() {
+  console.info("[resoleur]");
   let journeEcoule = (Date.now()+ decalage()  ) % 86400000
-  console.log("Maintenant",journeEcoule);
-  console.log("ouve",convHeureMillis(CONFIG['ouverture']['horaire']));
-  console.log("ferm",convHeureMillis(CONFIG['fermeture']['horaire']));
-
   if(journeEcoule < convHeureMillis(CONFIG['fermeture']['horaire']) && 
      journeEcoule < convHeureMillis(CONFIG['ouverture']['horaire']) ){
     setTimeout(devoiler,convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule);
@@ -100,7 +97,7 @@ function defPermChans(chans,role,perm) {
 }
 
 function defPermChan(chan,role,perm) {
-  console.log(new Date(),"[permChans] -> ",chan,role,perm);
+  console.info('[defPermChan] : chan ID=${chan}, role ID=${role}, Perms=${perm}');
     return rest.patch(
       Routes.channel(chan),
       {
