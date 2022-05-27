@@ -29,21 +29,21 @@ function resoleur() {
      journeEcoule < convHeureMillis(CONFIG['ouverture']['horaire']) ){
     setTimeout(devoiler,convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule);
     setTimeout(cacher  ,convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule);
-    console.log("Avenir ",new Date(decalage()+ Date.now()+convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule ));
-    console.log("Avenir ",new Date(decalage()+ Date.now()+convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule));
+    console.info("Avenir ",new Date(decalage()+ Date.now()+convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule ));
+    console.info("Avenir ",new Date(decalage()+ Date.now()+convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule));
   }else if(journeEcoule < convHeureMillis(CONFIG['fermeture']['horaire']) && 
            journeEcoule > convHeureMillis(CONFIG['ouverture']['horaire']) ){
     setTimeout(devoiler,86400000 + convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule);
     setTimeout(cacher  ,           convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule);
-    console.log("Avenir ",new Date(decalage()+ Date.now() +86400000 + convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule ));
-    console.log("Passé ",new Date(decalage()+ Date.now() +convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule));
+    console.info("Avenir ",new Date(decalage()+ Date.now() +86400000 + convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule ));
+    console.info("Passé ",new Date(decalage()+ Date.now() +convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule));
   }else if(journeEcoule > convHeureMillis(CONFIG['fermeture']['horaire']) && 
            journeEcoule > convHeureMillis(CONFIG['ouverture']['horaire'])) {
     setTimeout(devoiler,86400000 + convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule);
     setTimeout(cacher  ,86400000 + convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule);
     
-    console.log("Passé ",new Date(decalage()+ Date.now() +86400000 + convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule ));
-    console.log("Passé ",new Date(decalage()+ Date.now() +86400000 + convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule));
+    console.info("Passé ",new Date(decalage()+ Date.now() +86400000 + convHeureMillis(CONFIG['ouverture']['horaire'])-journeEcoule ));
+    console.info("Passé ",new Date(decalage()+ Date.now() +86400000 + convHeureMillis(CONFIG['fermeture']['horaire'])-journeEcoule));
   }
 
 }
@@ -79,7 +79,6 @@ function defPermChansV(chans,role,perm) {
         chansPerms[chan].forEach(ChanPerm => {
           if(ChanPerm["id"] === role){
             if(perm != ChanPerm["deny"]){
-              console.log(chan);
               return defPermChan(chan,role,perm);
             }
           }
